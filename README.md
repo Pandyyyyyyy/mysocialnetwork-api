@@ -2,6 +2,8 @@
 
 API REST pour un réseau social type Facebook - Gestion d'événements, groupes, discussions, albums photos, sondages et billetterie.
 
+LIENS PUBLICATION POSTMAN : https://documenter.getpostman.com/view/49042504/2sBXc8p4Ce
+
 ## Prérequis
 
 - Node.js 18+
