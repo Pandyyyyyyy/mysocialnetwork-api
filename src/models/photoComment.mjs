@@ -1,40 +1,27 @@
 import mongoose from 'mongoose';
 
 const Schema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
+  photoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Photo',
+    required: true
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-    select: false
-  },
-  firstname: {
+  content: {
     type: String,
     required: true,
     trim: true
   },
-  lastname: {
-    type: String,
-    required: true,
-    trim: true
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  avatar: String,
-  birthdate: Date,
-  city: String,
-  postalCode: String,
-  address: String,
   createdAt: {
     type: Date,
     default: Date.now
   }
 }, {
-  collection: 'users',
+  collection: 'photo_comments',
   minimize: false,
   versionKey: false
 }).set('toJSON', {
@@ -42,7 +29,6 @@ const Schema = new mongoose.Schema({
     const retUpdated = ret;
     retUpdated.id = ret._id;
     delete retUpdated._id;
-    delete retUpdated.password;
     return retUpdated;
   }
 });

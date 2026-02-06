@@ -1,12 +1,12 @@
-// Dependencies
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
+import { authenticateToken } from './controllers/auth.mjs';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
-// Core
 import config from './config.mjs';
 import routes from './controllers/routes.mjs';
 
@@ -69,7 +69,39 @@ const Server = class Server {
   }
 
   routes() {
+    routes.authRegister(this.app, this.connect);
     new routes.Users(this.app, this.connect);
+    new routes.Groups(this.app, this.connect);
+    new routes.Events(this.app, this.connect);
+    new routes.DiscussionThreads(this.app, this.connect);
+    new routes.PhotoAlbums(this.app, this.connect);
+    new routes.Polls(this.app, this.connect);
+    new routes.Tickets(this.app, this.connect);
+    new routes.ShoppingList(this.app, this.connect);
+    new routes.Carpool(this.app, this.connect);
+
+    this.app.get('/protected', authenticateToken, (req, res) => {
+      res.json({ message: 'Accès autorisé', user: req.user });
+    });
+
+    this.app.get('/', (req, res) => {
+      res.json({
+        name: 'MySocialNetwork API',
+        version: '1.0.0',
+        endpoints: {
+          auth: ['POST /auth/register', 'POST /auth/login'],
+          users: ['GET /users', 'GET /users/:id', 'POST /users', 'PUT /users/:id', 'DELETE /users/:id'],
+          groups: ['GET /groups', 'GET /groups/:id', 'POST /groups', 'PUT /groups/:id', 'POST /groups/:id/members', 'GET /groups/:id/events'],
+          events: ['GET /events', 'GET /events/:id', 'POST /events', 'PUT /events/:id', 'POST /events/:id/participants'],
+          discussionThreads: ['GET /discussion-threads', 'GET /discussion-threads/:id', 'POST /discussion-threads', 'POST /discussion-threads/:threadId/messages', 'POST /discussion-threads/:threadId/messages/:parentId/replies'],
+          photoAlbums: ['GET /photo-albums/:id', 'POST /photo-albums', 'GET /events/:eventId/photo-albums', 'POST /photo-albums/:albumId/photos', 'POST /photos/:photoId/comments'],
+          polls: ['GET /polls/:id', 'GET /events/:eventId/polls', 'POST /polls', 'POST /polls/:id/vote'],
+          tickets: ['GET /events/:eventId/ticket-types', 'POST /events/:eventId/ticket-types', 'POST /tickets/purchase', 'GET /events/:eventId/tickets'],
+          shoppingList: ['GET /events/:eventId/shopping-items', 'POST /events/:eventId/shopping-items', 'DELETE /events/:eventId/shopping-items/:itemId'],
+          carpool: ['GET /events/:eventId/carpools', 'POST /events/:eventId/carpools', 'POST /carpools/:id/join']
+        }
+      });
+    });
 
     this.app.use((req, res) => {
       res.status(404).json({
@@ -80,7 +112,12 @@ const Server = class Server {
   }
 
   security() {
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100
+    });
     this.app.use(helmet());
+    this.app.use(limiter);
     this.app.disable('x-powered-by');
   }
 

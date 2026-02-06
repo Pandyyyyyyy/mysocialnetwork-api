@@ -1,40 +1,36 @@
 import mongoose from 'mongoose';
 
 const Schema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
+  eventId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Event',
+    required: true
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-    select: false
-  },
-  firstname: {
+  name: {
     type: String,
     required: true,
     trim: true
   },
-  lastname: {
-    type: String,
+  amount: {
+    type: Number,
     required: true,
-    trim: true
+    min: 0
   },
-  avatar: String,
-  birthdate: Date,
-  city: String,
-  postalCode: String,
-  address: String,
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  soldCount: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 }, {
-  collection: 'users',
+  collection: 'ticket_types',
   minimize: false,
   versionKey: false
 }).set('toJSON', {
@@ -42,7 +38,6 @@ const Schema = new mongoose.Schema({
     const retUpdated = ret;
     retUpdated.id = ret._id;
     delete retUpdated._id;
-    delete retUpdated.password;
     return retUpdated;
   }
 });

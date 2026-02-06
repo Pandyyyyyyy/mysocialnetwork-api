@@ -1,40 +1,36 @@
 import mongoose from 'mongoose';
 
 const Schema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-    select: false
-  },
-  firstname: {
+  content: {
     type: String,
     required: true,
     trim: true
   },
-  lastname: {
-    type: String,
-    required: true,
-    trim: true
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  avatar: String,
-  birthdate: Date,
-  city: String,
-  postalCode: String,
-  address: String,
+  threadId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'DiscussionThread',
+    required: true
+  },
+  parentMessageId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Message',
+    default: null
+  },
+  replies: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Message'
+  }],
   createdAt: {
     type: Date,
     default: Date.now
   }
 }, {
-  collection: 'users',
+  collection: 'messages',
   minimize: false,
   versionKey: false
 }).set('toJSON', {
@@ -42,7 +38,6 @@ const Schema = new mongoose.Schema({
     const retUpdated = ret;
     retUpdated.id = ret._id;
     delete retUpdated._id;
-    delete retUpdated.password;
     return retUpdated;
   }
 });

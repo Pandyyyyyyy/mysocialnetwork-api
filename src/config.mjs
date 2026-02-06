@@ -2,11 +2,11 @@ export default {
   development: {
     type: 'development',
     port: 3000,
-    mongodb: 'mongodb+srv://12345:12345@demo.v4muu5b.mongodb.net/ecole'
+    mongodb: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mysocialnetwork',
   },
   production: {
     type: 'production',
     port: 3000,
-    mongodb: 'mongodb+srv://12345:12345@demo.v4muu5b.mongodb.net/ecole'
-  }
+    mongodb: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/mysocialnetwork',
+  },
 };
